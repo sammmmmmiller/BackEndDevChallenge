@@ -13,3 +13,5 @@ Modify the connection string in CalculatorContext.cs to point to your local data
 
 Apply Database Migration:
 Run the Entity Framework migration 20240722024700_InitialCreate.cs to set up the database schema.
+
+After these steps are completed, running the application should allow easy testing using swagger.  Results should be saved in the local DB.
