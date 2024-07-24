@@ -13,6 +13,8 @@
     public enum MathOperationType
     {
         Addition,
-        Subtraction
+        Subtraction,
+        Multiplication,
+        Division
     }
 }

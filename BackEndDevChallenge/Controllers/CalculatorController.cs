@@ -32,6 +32,25 @@ namespace BackEndDevChallenge.Controllers
             return result;
         }
 
+        [HttpGet("Multiply")]
+        public ActionResult<int> Multiply(int input1, int input2, string? username = "Legacy")
+        {
+            var result = input1 * input2;
+            SaveMathProblem(username, input1, input2, result, MathOperationType.Multiplication);
+            return result;
+        }
+
+        [HttpGet("Divide")]
+        public ActionResult<int> Divide(int input1, int input2, string? username = "Legacy")
+        {
+            if (input2 == 0) {
+                return BadRequest("Cannot divide by 0.");
+            }
+            var result = input1 / input2;
+            SaveMathProblem(username, input1, input2, result, MathOperationType.Division);
+            return result;
+        }
+
         private void SaveMathProblem(string username, int input1, int input2, int result, MathOperationType operationType)
         {
             var mathProblem = new MathProblem
