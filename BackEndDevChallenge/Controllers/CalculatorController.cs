@@ -75,6 +75,35 @@ namespace BackEndDevChallenge.Controllers
             
         }
 
+        [HttpGet("Report")]
+        public ActionResult<Report> Report()
+        {
+            UserReport[] userReports = _context.MathProblems
+                .GroupBy(mp => mp.Username)
+                .Select(group => new UserReport
+                {
+                    Username = group.Key,
+                    NumAPICalls = group.Count(),
+                    NumErrors = _context.ErrorLogs.Count(e => e.Username == group.Key)
+                })
+                .ToArray();
+
+            int mostCommonAnswer = _context.MathProblems
+                .GroupBy(mp => mp.Result)
+                .OrderByDescending(group => group.Count())
+                .Select(group => group.Key)
+                .FirstOrDefault();
+
+            Report report = new Report
+            {
+                UserReports = userReports,
+                MostCommonAnswer = mostCommonAnswer
+            };
+
+            return report;
+            
+        }
+
         private void SaveMathProblem(string username, int input1, int input2, int result, MathOperationType operationType)
         {
             var mathProblem = new MathProblem
