@@ -15,6 +15,7 @@ namespace BackEndDevChallenge
         }
 
         public DbSet<MathProblem> MathProblems { get; set; }
+        public DbSet<ErrorLog> ErrorLogs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
