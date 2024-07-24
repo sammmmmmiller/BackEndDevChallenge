@@ -17,25 +17,26 @@ namespace BackEndDevChallenge.Controllers
         }
 
         [HttpGet("Add")]
-        public ActionResult<int> Add(int input1, int input2)
+        public ActionResult<int> Add(int input1, int input2, string? username = "Legacy")
         {
             var result = input1 + input2;
-            SaveMathProblem(input1, input2, result, MathOperationType.Addition);
+            SaveMathProblem(username, input1, input2, result, MathOperationType.Addition);
             return result;
         }
 
         [HttpGet("Subtract")]
-        public ActionResult<int> Subtract(int input1, int input2)
+        public ActionResult<int> Subtract(int input1, int input2, string? username = "Legacy")
         {
             var result = input1 - input2;
-            SaveMathProblem(input1, input2, result, MathOperationType.Subtraction);
+            SaveMathProblem(username, input1, input2, result, MathOperationType.Subtraction);
             return result;
         }
 
-        private void SaveMathProblem(int input1, int input2, int result, MathOperationType operationType)
+        private void SaveMathProblem(string username, int input1, int input2, int result, MathOperationType operationType)
         {
             var mathProblem = new MathProblem
             {
+                Username = username,
                 Input1 = input1,
                 Input2 = input2,
                 Result = result,
