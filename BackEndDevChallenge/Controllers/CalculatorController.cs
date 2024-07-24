@@ -24,7 +24,7 @@ namespace BackEndDevChallenge.Controllers
                 SaveMathProblem(username, input1, input2, result, MathOperationType.Addition);
                 return result;
             } catch (Exception exception) {
-                SaveError(username, MathOperationType.Addition, exception.Message, input1, input2);
+                SaveError(username, ErrorType.InternalServerError, exception.Message, input1, input2);
                 return StatusCode(500, "An internal server error occurred.");
             }
             
@@ -38,7 +38,7 @@ namespace BackEndDevChallenge.Controllers
                 SaveMathProblem(username, input1, input2, result, MathOperationType.Subtraction);
                 return result;
             } catch (Exception exception) {
-                SaveError(username, MathOperationType.Subtraction, exception.Message, input1, input2);
+                SaveError(username, ErrorType.InternalServerError, exception.Message, input1, input2);
                 return StatusCode(500, "An internal server error occurred.");            
             }
 
@@ -52,7 +52,7 @@ namespace BackEndDevChallenge.Controllers
                 SaveMathProblem(username, input1, input2, result, MathOperationType.Multiplication);
                 return result;
             } catch (Exception exception) {
-                SaveError(username, MathOperationType.Multiplication, exception.Message, input1, input2);
+                SaveError(username, ErrorType.InternalServerError, exception.Message, input1, input2);
                 return StatusCode(500, "An internal server error occurred.");      
             }
         }
@@ -62,14 +62,14 @@ namespace BackEndDevChallenge.Controllers
         {
             try {
                 if (input2 == 0) {
-                    SaveError(username, MathOperationType.Division, "Cannot divide by 0.", input1, input2);
+                    SaveError(username, ErrorType.DivisionByZero, "Cannot divide by 0.", input1, input2);
                     return BadRequest("Cannot divide by 0.");
                 }
                 var result = input1 / input2;
                 SaveMathProblem(username, input1, input2, result, MathOperationType.Division);
                 return result;
             } catch (Exception exception) {
-                SaveError(username, MathOperationType.Division, exception.Message, input1, input2);
+                SaveError(username, ErrorType.InternalServerError, exception.Message, input1, input2);
                 return StatusCode(500, "An internal server error occurred.");
             }
             
@@ -87,7 +87,15 @@ namespace BackEndDevChallenge.Controllers
                     NumErrors = _context.ErrorLogs.Count(e => e.Username == group.Key)
                 })
                 .ToArray();
-
+            ErrorReport[] errorReports = _context.ErrorLogs
+                .GroupBy(el => new { el.ErrorType, el.ErrorMessage })
+                .Select(group => new ErrorReport
+                {
+                    ErrorType = group.Key.ErrorType,
+                    ErrorMessage = group.Key.ErrorMessage,
+                    Quantity = group.Count()
+                })
+                .ToArray();
             int mostCommonAnswer = _context.MathProblems
                 .GroupBy(mp => mp.Result)
                 .OrderByDescending(group => group.Count())
@@ -97,6 +105,7 @@ namespace BackEndDevChallenge.Controllers
             Report report = new Report
             {
                 UserReports = userReports,
+                ErrorReports = errorReports,
                 MostCommonAnswer = mostCommonAnswer
             };
 
@@ -119,10 +128,10 @@ namespace BackEndDevChallenge.Controllers
             _context.SaveChanges();
         }
 
-        private void SaveError(string username, MathOperationType operationType, string errorMessage, int input1, int input2) { 
+        private void SaveError(string username, ErrorType errorType, string errorMessage, int input1, int input2) { 
             ErrorLog errorLog = new ErrorLog {
                 Username = username,
-                ErrorType = operationType,
+                ErrorType = errorType,
                 ErrorMessage = errorMessage,
                 Input1 = input1,
                 Input2 = input2,

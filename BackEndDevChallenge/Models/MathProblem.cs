@@ -21,7 +21,7 @@
     {
         public int ID {get; set;}
         public string Username {get; set;}
-        public MathOperationType ErrorType {get; set;}
+        public ErrorType ErrorType {get; set;}
         public string ErrorMessage {get; set;}
         public int Input1 {get; set;}
         public int Input2 {get; set;}
@@ -34,9 +34,22 @@
         public int NumErrors {get; set;}
     }
 
+    public class ErrorReport
+    {
+        public ErrorType ErrorType {get; set;}
+        public string ErrorMessage {get; set;}
+        public int Quantity {get; set;}
+    }
+    public enum ErrorType
+    {
+        InternalServerError,
+        DivisionByZero,
+        ValidationError
+    }
     public class Report {
         public int ID {get; set;}
         public UserReport[] UserReports {get; set;}
+        public ErrorReport[] ErrorReports {get; set;}
         public int MostCommonAnswer {get; set;}
     }
 }
